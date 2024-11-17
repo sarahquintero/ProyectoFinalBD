@@ -6,7 +6,6 @@
 package VISTA;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -14,7 +13,7 @@ import java.awt.event.ActionListener;
 public class SQLQueryJFrame extends JFrame {
 
     private JPanel queryPanel;
-    private JTextField queryField;
+    // private JTextField queryField;
     private JTable resultTable;
     private JScrollPane tableScrollPane;
 
@@ -32,15 +31,15 @@ public class SQLQueryJFrame extends JFrame {
     }
 
     private void initComponents() {
-        setTitle("SQL Query Executor");
+        setTitle("Consultas Maraton");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         queryPanel = new JPanel();
         queryPanel.setLayout(new FlowLayout());
 
-        queryField = new JTextField(30);
-        queryPanel.add(queryField);
+        // queryField = new JTextField(30);
+        // queryPanel.add(queryField);
 
         // Inicializar nuevos botones
         listarParticipantesButton = new JButton("Listar Participantes");
@@ -71,9 +70,11 @@ public class SQLQueryJFrame extends JFrame {
     }
 
     // Métodos para obtener la consulta del campo de texto
-    public String getQuery() {
-        return queryField.getText();
-    }
+    /*
+     * public String getQuery() {
+     * return queryField.getText();
+     * }
+     */
 
     // Método para obtener la tabla de resultados
     public JTable getResultTable() {
@@ -107,12 +108,23 @@ public class SQLQueryJFrame extends JFrame {
 
     // Método para actualizar la tabla de resultados
     public void updateTable(JTable newTable) {
+        System.out.println("Llamando a updateTable"); // Mensaje de depuración
+        System.out.println("Número de filas en la nueva tabla: " + newTable.getRowCount()); // Verificar número de filas
+        System.out.println("Número de columnas en la nueva tabla: " + newTable.getColumnCount()); // Verificar número de
+                                                                                                  // columnas
+
+        // Remover el JScrollPane actual
         remove(tableScrollPane);
+        // Actualizar la tabla de resultados con la nueva tabla
         resultTable = newTable;
+        // Crear un nuevo JScrollPane con la nueva tabla
         tableScrollPane = new JScrollPane(resultTable);
+        // Añadir el nuevo JScrollPane al JFrame
         add(tableScrollPane, BorderLayout.CENTER);
+        // Validar y repintar el JFrame para reflejar los cambios
         validate();
         repaint();
+        System.out.println("Tabla actualizada y repintada"); // Mensaje de depuración
     }
 
     public void setSaveButtonListener(ActionListener listener) {
@@ -120,8 +132,10 @@ public class SQLQueryJFrame extends JFrame {
     }
 
     // Método para limpiar el campo de texto y la tabla de resultados
-    public void clearQueryAndTable() {
-        queryField.setText("");
-        resultTable.setModel(new DefaultTableModel());
-    }
+    /*
+     * public void clearQueryAndTable() {
+     * queryField.setText("");
+     * resultTable.setModel(new DefaultTableModel());
+     * }
+     */
 }

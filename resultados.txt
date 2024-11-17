@@ -1,0 +1,74 @@
+------------------------------------------------------------
+CONSULTAS DE LOS DETALLES DE LA BASE DE DATOS DE LA MARATON
+------------------------------------------------------------
+Consulta ejecutada: SELECT * FROM participante
+ID                  NOMBRE              GENERO              
+------------------------------------------------------------
+1                   Carlos Pérez        M                   
+2                   Laura Gómez         F                   
+3                   Juan Martínez       M                   
+4                   Andrea Gómez        F                   
+5                   Juan Castillo       M                   
+6                   Camilo García       M                   
+7                   Angélica Belisario  F                   
+8                   Esteban Cedeño      M                   
+9                   Alejandro Nuñez     M                   
+
+------------------------------------------------------------
+CONSULTAS DE LOS DETALLES DE LA BASE DE DATOS DE LA MARATON
+------------------------------------------------------------
+Consulta ejecutada: SELECT AVG(tiempo) AS promedio_tiempo FROM carrera c JOIN participacion p ON c.id = p.id_carrera JOIN participante pa ON p.id_participante = pa.id WHERE pa.genero = 'F'
+PROMEDIO_TIEMPO     
+------------------------------------------------------------
+0 1:17:40.0         
+
+------------------------------------------------------------
+CONSULTAS DE LOS DETALLES DE LA BASE DE DATOS DE LA MARATON
+------------------------------------------------------------
+Consulta ejecutada: SELECT AVG(tiempo) AS promedio_tiempo FROM carrera c JOIN participacion p ON c.id = p.id_carrera JOIN participante pa ON p.id_participante = pa.id WHERE pa.genero = 'M'
+PROMEDIO_TIEMPO     
+------------------------------------------------------------
+0 1:6:1.428571429   
+
+------------------------------------------------------------
+CONSULTAS DE LOS DETALLES DE LA BASE DE DATOS DE LA MARATON
+------------------------------------------------------------
+Consulta ejecutada: SELECT pa.id, pa.nombre, COUNT(p.id_carrera) AS numero_carreras FROM participante pa JOIN participacion p ON pa.id = p.id_participante GROUP BY pa.id, pa.nombre
+ID                  NOMBRE              NUMERO_CARRERAS     
+------------------------------------------------------------
+1                   Carlos Pérez        2                   
+2                   Laura Gómez         2                   
+3                   Juan Martínez       1                   
+6                   Camilo García       1                   
+8                   Esteban Cedeño      1                   
+5                   Juan Castillo       1                   
+9                   Alejandro Nuñez     1                   
+4                   Andrea Gómez        1                   
+7                   Angélica Belisario  1                   
+
+------------------------------------------------------------
+CONSULTAS DE LOS DETALLES DE LA BASE DE DATOS DE LA MARATON
+------------------------------------------------------------
+Consulta ejecutada: SELECT c.id, c.distancia, pa.nombre FROM carrera c JOIN participacion p ON c.id = p.id_carrera JOIN participante pa ON p.id_participante = pa.id
+ID                  DISTANCIA           NOMBRE              
+------------------------------------------------------------
+1                   10.5                Carlos Pérez        
+1                   10.5                Laura Gómez         
+1                   10.5                Juan Martínez       
+3                   1                   Camilo García       
+2                   9.5                 Esteban Cedeño      
+1                   10.5                Juan Castillo       
+3                   1                   Alejandro Nuñez     
+3                   1                   Andrea Gómez        
+2                   9.5                 Angélica Belisario  
+1                   10.5                Carlos Pérez        
+3                   1                   Laura Gómez         
+
+------------------------------------------------------------
+CONSULTAS DE LOS DETALLES DE LA BASE DE DATOS DE LA MARATON
+------------------------------------------------------------
+Consulta ejecutada: SELECT AVG(distancia) AS distancia_promedio FROM carrera
+DISTANCIA_PROMEDIO  
+------------------------------------------------------------
+7                   
+

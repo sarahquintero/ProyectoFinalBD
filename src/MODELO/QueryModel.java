@@ -1,8 +1,12 @@
 package MODELO;
 
-import java.sql.*;
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class QueryModel {
     private Connection connection;
@@ -11,43 +15,27 @@ public class QueryModel {
         this.connection = connection;
     }
 
-    // Método para ejecutar consultas SELECT y retornar una JTable
     public JTable executeQuery(String query) throws SQLException {
-        if (connection == null) {
-            throw new IllegalStateException("La conexión a la base de datos no está inicializada.");
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query);
+
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        DefaultTableModel tableModel = new DefaultTableModel();
+        for (int i = 1; i <= columnCount; i++) {
+            tableModel.addColumn(metaData.getColumnName(i));
         }
 
-        // Crear un Statement con el tipo adecuado para el ResultSet
-        try (Statement stmt = connection.createStatement(
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            // Crear los nombres de las columnas
-            String[] columnNames = new String[columnCount];
+        while (resultSet.next()) {
+            Object[] row = new Object[columnCount];
             for (int i = 1; i <= columnCount; i++) {
-                columnNames[i - 1] = metaData.getColumnName(i);
+                row[i - 1] = resultSet.getObject(i);
             }
-
-            // Obtener datos de las filas
-            rs.last(); // Ir a la última fila
-            int rowCount = rs.getRow();
-            rs.beforeFirst(); // Volver al inicio
-
-            Object[][] data = new Object[rowCount][columnCount];
-            int rowIndex = 0;
-            while (rs.next()) {
-                for (int colIndex = 1; colIndex <= columnCount; colIndex++) {
-                    data[rowIndex][colIndex - 1] = rs.getObject(colIndex);
-                }
-                rowIndex++;
-            }
-
-            return new JTable(data, columnNames); // Devolver la tabla con los datos
+            tableModel.addRow(row);
         }
+
+        return new JTable(tableModel);
     }
 
     // Método para ejecutar consultas INSERT, UPDATE o DELETE

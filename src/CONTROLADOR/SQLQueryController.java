@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class SQLQueryController {
-
     private SQLQueryJFrame view;
     private QueryModel model;
 
@@ -69,72 +68,68 @@ public class SQLQueryController {
                 saveResultsToFile();
             }
         });
-
     }
 
     private void listarParticipantes() {
         String query = "SELECT * FROM participante";
-        try {
-            JTable resultTable = model.executeQuery(query);
-            view.updateTable(resultTable);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(view, "Error ejecutando la consulta: " + ex.getMessage());
-        }
+        ejecutarConsultaYGuardarResultados(query);
     }
 
     private void promedioTiempoGenero(String genero) {
         String query = "SELECT AVG(tiempo) AS promedio_tiempo FROM carrera c " +
-                "JOIN participacion p ON c.id = p.id_carrera " +
-                "JOIN participante pa ON p.id_participante = pa.id " +
-                "WHERE pa.genero = '" + genero + "'";
-        try {
-            JTable resultTable = model.executeQuery(query);
-            view.updateTable(resultTable);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(view, "Error ejecutando la consulta: " + ex.getMessage());
-        }
+                       "JOIN participacion p ON c.id = p.id_carrera " +
+                       "JOIN participante pa ON p.id_participante = pa.id " +
+                       "WHERE pa.genero = '" + genero + "'";
+        ejecutarConsultaYGuardarResultados(query);
     }
 
     private void obtenerParticipantesYCarreras() {
         String query = "SELECT pa.id, pa.nombre, COUNT(p.id_carrera) AS numero_carreras " +
-                "FROM participante pa " +
-                "JOIN participacion p ON pa.id = p.id_participante " +
-                "GROUP BY pa.id, pa.nombre";
-        try {
-            JTable resultTable = model.executeQuery(query);
-            view.updateTable(resultTable);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(view, "Error ejecutando la consulta: " + ex.getMessage());
-        }
+                       "FROM participante pa " +
+                       "JOIN participacion p ON pa.id = p.id_participante " +
+                       "GROUP BY pa.id, pa.nombre";
+        ejecutarConsultaYGuardarResultados(query);
     }
 
     private void obtenerCarrerasYParticipantes() {
         String query = "SELECT c.id, c.distancia, pa.nombre " +
-                "FROM carrera c " +
-                "JOIN participacion p ON c.id = p.id_carrera " +
-                "JOIN participante pa ON p.id_participante = pa.id";
-        try {
-            JTable resultTable = model.executeQuery(query);
-            view.updateTable(resultTable);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(view, "Error ejecutando la consulta: " + ex.getMessage());
-        }
+                       "FROM carrera c " +
+                       "JOIN participacion p ON c.id = p.id_carrera " +
+                       "JOIN participante pa ON p.id_participante = pa.id";
+        ejecutarConsultaYGuardarResultados(query);
     }
 
     private void distanciaPromedio() {
         String query = "SELECT AVG(distancia) AS distancia_promedio FROM carrera";
+        ejecutarConsultaYGuardarResultados(query);
+    }
+
+    private void ejecutarConsultaYGuardarResultados(String query) {
         try {
+            System.out.println("Ejecutando consulta: " + query); // Mensaje de depuración
             JTable resultTable = model.executeQuery(query);
+            System.out.println("Número de filas en resultado: " + resultTable.getRowCount()); // Depuración
             view.updateTable(resultTable);
+            System.out.println("Consulta ejecutada correctamente. Resultados actualizados."); // Mensaje de depuración
+
+            // Guardar resultados en archivo
+            guardarResultadosEnArchivo(query, resultTable);
         } catch (SQLException ex) {
+            System.err.println("Error ejecutando la consulta: " + ex.getMessage());
             JOptionPane.showMessageDialog(view, "Error ejecutando la consulta: " + ex.getMessage());
         }
     }
 
-    private void saveResultsToFile() {
-        JTable table = view.getResultTable();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("resultados.txt"))) {
-            // Escribir los nombres de las columnas con formato
+    private void guardarResultadosEnArchivo(String query, JTable table) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("resultados.txt", true))) {
+            writer.write("------------------------------------------------------------");
+            writer.write("\n");
+            writer.write("CONSULTAS DE LOS DETALLES DE LA BASE DE DATOS DE LA MARATON");
+            writer.write("\n");
+            writer.write("------------------------------------------------------------");
+            writer.write("\n");
+            writer.write("Consulta ejecutada: " + query);
+            writer.write("\n");
             for (int i = 0; i < table.getColumnCount(); i++) {
                 writer.write(String.format("%-20s", table.getColumnName(i)));
             }
@@ -142,17 +137,20 @@ public class SQLQueryController {
             writer.write("------------------------------------------------------------");
             writer.write("\n");
 
-            // Escribir los datos de cada fila con formato
             for (int i = 0; i < table.getRowCount(); i++) {
                 for (int j = 0; j < table.getColumnCount(); j++) {
                     writer.write(String.format("%-20s", table.getValueAt(i, j)));
                 }
                 writer.write("\n");
             }
-            JOptionPane.showMessageDialog(view, "Resultados guardados en resultados.txt");
+            writer.write("\n");
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(view, "Error al guardar los resultados: " + ex.getMessage());
         }
     }
 
+    private void saveResultsToFile() {
+        JOptionPane.showMessageDialog(view, "Las consultas ejecutadas se han guardado en resultados.txt");
+    }
 }
+
